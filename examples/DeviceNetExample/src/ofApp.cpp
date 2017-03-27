@@ -3,42 +3,45 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	
-	slaveDeviceID = 25;
+	
+	//app setup
+	int frameRate = 30;
 	ofBackground(54, 54, 54, 255);
-
+	ofSetFrameRate(frameRate);
+	
+	//font setup
 	ofTrueTypeFont::setGlobalDpi(72);
-
 	verdana22.load("verdana.ttf", 22, true, true);
 	verdana22.setLineHeight(34.0f);
 	verdana22.setLetterSpacing(1.035);
 
-	// open an outgoing connection to HOST:PORT
+	//OSC: open an outgoing connection to HOST:PORT
 	sender.setup(HOST, PORT);
 
-	ofSetFrameRate(30);
+	//device net
 	dNet.listModules();
 	if (dNet.setup()) {
 		ofLog() << "Connected to DeviceNet Module" << endl;
 	}
 	//slaveDeviceList = dNet.searchAllDevices();
-	dNet.startDevice(slaveDeviceID);
+	//if (!slaveDeviceList.empty()) {
+		//slaveDeviceID = slaveDeviceList[0];
+		slaveDeviceID = 25;
+		dNet.addConnection(slaveDeviceID, 50, 50, int(1000 / frameRate)); //50 bytes input, 50 bytes output, 33msec polling rate
+		dNet.startDevice(slaveDeviceID);
+	//}
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	unsigned char readBuffer[50];
-	unsigned short dataLength = 0; 
-	//ofSleepMillis(300);
-
-	//if (!slaveDeviceList.empty()) {
-		//dNet.startDevice(slaveDeviceList[0]);
-		//dNet.readBytes(slaveDeviceList[0], readBuffer, &dataLength);
-
-		
+	unsigned short dataLength = 50;
+	
 		dNet.readBytes(slaveDeviceID, readBuffer, &dataLength);
 	
-		int numBytes = 3; //bytes per value
-		int numEmptyBytes = 30; //29 empty bytes + 1
+		int numBytes = 4; //bytes per value
+		int numEmptyBytes = 23; //22 empty bytes + 1
 
 		for (int i = dataLength- numEmptyBytes; i >= 0; i-=numBytes) {
 			//00 DD 0E = 0x0EDD = 3805 = 38.05mm
@@ -46,47 +49,38 @@ void ofApp::update(){
 			//00 6F 52 = 0x526F = 21103 = 211.03mm
 			float coordValue = makeValue(readBuffer,i);
 			robotCoords.push_back(coordValue);
+			
 			//printf("coordValue: %f mm \n", coordValue);
 		}
 
-		ofxOscMessage m;
-		m.setAddress("/kuka/transform");
-		if (robotCoords.size() > 6) {
-			m.addFloatArg(robotCoords[6]); //X
-			m.addFloatArg(robotCoords[5]); //Y
-			m.addFloatArg(robotCoords[4]); //Z
-			m.addFloatArg(robotCoords[3]); //A
-			m.addFloatArg(robotCoords[2]); //B
-			m.addFloatArg(robotCoords[0]); //C
+		if (robotCoords.size() >= 6) {
+			//printf("coordValue[1] : %f \n", robotCoords[1]);
+			ofxOscMessage m;
+			m.setAddress("/kuka/transform");
+			if (robotCoords.size() > 6) {
+				m.addFloatArg(robotCoords[6]); //X
+				m.addFloatArg(robotCoords[5]); //Y
+				m.addFloatArg(robotCoords[4]); //Z
+				m.addFloatArg(robotCoords[3]); //A
+				m.addFloatArg(robotCoords[1]); //B
+				m.addFloatArg(robotCoords[0]); //C
+			}
+			sender.sendMessage(m, false);
 		}
-		sender.sendMessage(m, false);
 
 }
 //--------------------------------------------------------------
 float ofApp::makeValue(unsigned char *buf, int coordIndex) {
 
-	//printf("0x%X,0x%X,0x%X \n", buf[coordIndex], buf[coordIndex -1], buf[coordIndex -2]);
+	//printf("0x%X,0x%X,0x%X,0x%X \n", buf[coordIndex], buf[coordIndex -1], buf[coordIndex -2],buf[coordIndex -3]);
 
-	//A sign byte contains Z's msb (mistake on the robot)
-	if ((buf[coordIndex + 1] & 0x1)== 0x1) { //0x81 & 0x1 = 0x1 or 0x80 & 0x1 = 0x0
-		int msb = int(buf[coordIndex]);
-		//printf("-- 0x%X --", msb);
-		int shift = msb << 8;
-		int value = shift + int(buf[coordIndex - 1]+ 0x1) + 0xFFFF;
-		int sign = int(buf[coordIndex - 2]);
-		if (sign == 0x80) { //TODO: Check sign
-			value = value * -1;
-		}
-
-		return float(value) / 100.0f;
-	}
-	
-	//normal coordinates
 	int msb = int(buf[coordIndex]);
 	int shift = msb << 8;
-	int value = shift + int(buf[coordIndex - 1]);
-	int sign = int(buf[coordIndex - 2]);
-	if (sign == 0x80 || sign == 0x81) { //TODO: Check sign - 0x81 is due to robot overflow error (see above)
+	shift = shift + int(buf[coordIndex - 1]);
+	shift = shift << 8;
+	int value = shift + int(buf[coordIndex - 2]);
+	int sign = int(buf[coordIndex - 3]);
+	if (sign == 0x80) {  //0x0 is positive 0x80 negative
 		value = value * -1;
 	}
 	
@@ -120,7 +114,7 @@ void ofApp::draw(){
 		verdana22.drawString(coordStr, 50, 250);
 
 		//sprintf(coordStr, "B: %f deg", robotCoords[1]);
-		coordStr = "B: " + to_string(robotCoords[2]) + " deg";
+		coordStr = "B: " + to_string(robotCoords[1]) + " deg";
 		verdana22.drawString(coordStr, 50, 300);
 
 		//sprintf(coordStr, "C: %f deg", robotCoords[0]);

@@ -79,9 +79,10 @@ void ofApp::kukaTransform(float x, float y, float z, float a, float b, float c)
 	
 	transform.makeIdentityMatrix();
 	
-	transform.rotate(b, 1, 0, 0); //x
-	//transform.rotate(a, 0, -1, 0); //y
-	//transform.rotate(c, 0, 0, -1); //z
+	transform.rotate(b, 1, 0, 0); //y
+	transform.rotate(c, 0, 0, -1); //z
+	transform.rotate(a, 0, -1, 0); //x
+	
 	
 	transform.translate(point);
 

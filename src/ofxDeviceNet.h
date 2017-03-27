@@ -31,6 +31,14 @@ public:
 	//scans for connected slave devices on Device Net
 	vector <unsigned char> searchAllDevices();
 
+	void getBaudRate();
+
+	//make an IO connection with the device
+	void addConnection(unsigned char deviceMacID, int inByteLen, int outByteLen, int pollRateMS);
+
+	//delete an IO connection with the device
+	void removeConnection(unsigned char deviceMacID);
+
 	//start communicating with the specific slave device
 	void startDevice(unsigned char deviceMacID);
 

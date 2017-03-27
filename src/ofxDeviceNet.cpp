@@ -54,6 +54,7 @@ bool ofxDeviceNet::setup(int portNumber)
 
 	portNum = portNumber;
 	err = I7565DNM_ActiveModule(portNumber);
+
 	if (err != DNMXS_NoError) {
 		ofLogError() << "Error Activating Module, Error code#" << err << endl;
 		return false;
@@ -103,6 +104,40 @@ vector <unsigned char> ofxDeviceNet::searchAllDevices()
 		
 }
 
+void ofxDeviceNet::getBaudRate()
+{
+}
+
+void ofxDeviceNet::addConnection(unsigned char deviceMacID,int inByteLen, int outByteLen, int pollRateMS)
+{
+	DWORD err;
+	if (portNum == 0xFF) {
+		ofLogError() << "Setup module before starting slave device" << endl;
+		return;
+	}
+
+	err = I7565DNM_AddIOConnection(portNum, deviceMacID, ConType_Poll, inByteLen, outByteLen, pollRateMS);
+	if (err) {
+		printf("Add IO Connection Error Code:%d\n", err);
+	}
+		
+
+}
+
+void ofxDeviceNet::removeConnection(unsigned char deviceMacID)
+{
+	DWORD err;
+	if (portNum == 0xFF) {
+		ofLogError() << "Setup module before starting slave device" << endl;
+		return;
+	}
+
+	err = I7565DNM_RemoveIOConnection(portNum, deviceMacID, ConType_Poll);
+	if (err) {
+		printf("Error Code:%d\n", err);
+	}
+}
+
 void ofxDeviceNet::startDevice(unsigned char deviceMacID)
 {
 	DWORD err;
@@ -141,7 +176,7 @@ bool ofxDeviceNet::readBytes(unsigned char deviceMacID, unsigned char * buffer, 
 		return true;
 	}
 	else {
-		ofLogError() << "Error Reading Input Data, Error code#" << int(err);
+		printf("Error Reading Input Data, Error Code:%d\n", err);
 		return false;
 	}
 	
