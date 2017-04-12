@@ -17,23 +17,23 @@ void ofxDeviceNet::listModules() {
 	err = I7565DNM_TotalI7565DNMModule(&numOfModule, portList);
 	DNM_CHECK_FATAL_ERROR;
 
-	ofLog() << "Number of Modules:" << int(numOfModule);
+	std::cout << "Number of Modules:" << int(numOfModule) << std::endl;
 	for (BYTE i = 0; i < numOfModule; i++) {
-		ofLog() << "Module Port Number [" << int(portList[i]) << "]" << endl;
+		std::cout << "Module Port Number [" << int(portList[i]) << "]" << std::endl;
 	}
 
 }
 
-vector<unsigned char> ofxDeviceNet::getModuleList()
+std::vector<unsigned char> ofxDeviceNet::getModuleList()
 {
 	DWORD err;
 
 	err = I7565DNM_TotalI7565DNMModule(&numOfModule, portList);
 	DNM_CHECK_FATAL_ERROR;
 	if (numOfModule == 0) {
-		return vector<unsigned char>();
+		return std::vector<unsigned char>();
 	}
-	return vector<unsigned char> (begin(portList), end(portList));
+	return std::vector<unsigned char> (std::begin(portList), std::end(portList));
 	
 }
 
@@ -56,7 +56,7 @@ bool ofxDeviceNet::setup(int portNumber)
 	err = I7565DNM_ActiveModule(portNumber);
 
 	if (err != DNMXS_NoError) {
-		ofLogError() << "Error Activating Module, Error code#" << err << endl;
+		std::cout << "Error Activating Module, Error code#" << err << std::endl;
 		return false;
 	}
 	return true;
@@ -70,36 +70,36 @@ void ofxDeviceNet::close()
 	DNM_CHECK_ERROR;
 }
 
-vector <unsigned char> ofxDeviceNet::searchAllDevices()
+std::vector <unsigned char> ofxDeviceNet::searchAllDevices()
 {
 	DWORD err;
 
 	if (portNum == 0xFF) {
-		ofLogError() << "Setup module before searching for slave devices" << endl;
-		return vector<unsigned char>();
+		std::cout << "Setup module before searching for slave devices" << std::endl;
+		return std::vector<unsigned char>();
 	}
 
-	cout << "Searching for Devices";
+	std::cout << "Searching for Devices";
 	err = I7565DNM_SearchAllDevices(portNum);
 	DNM_CHECK_ERROR;
 	
 	while (I7565DNM_IsSearchOK(portNum)) {
-		cout << ".";
-		ofSleepMillis(300);
+		std::cout << ".";
+		std::this_thread::sleep_for(std::chrono::milliseconds(300)); //sleep
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 	err = I7565DNM_GetSearchedDevices(portNum, &TotalDevices, DesMACID, Type, DeviceInputLen, DeviceOutputLen);
 	DNM_CHECK_ERROR;
 	if (TotalDevices > 0) {
 		for (BYTE i = 0; i < TotalDevices; i++) {
-			ofLog() << "Slave device mac ID: " << int(*DesMACID);
+			std::cout << "Slave device mac ID: " << int(*DesMACID) << std::endl;
 		}
-		return vector<unsigned char>(begin(portList), end(portList));
+		return std::vector<unsigned char>(std::begin(portList), std::end(portList));
 	}
 	
-	ofLogError() << "No slave devices found";
-	return vector<unsigned char>();
+	std::cout << "No slave devices found" << std::endl;
+	return std::vector<unsigned char>();
 	
 		
 }
@@ -112,7 +112,7 @@ void ofxDeviceNet::addConnection(unsigned char deviceMacID,int inByteLen, int ou
 {
 	DWORD err;
 	if (portNum == 0xFF) {
-		ofLogError() << "Setup module before starting slave device" << endl;
+		std::cout << "Setup module before connecting to slave device" << std::endl;
 		return;
 	}
 
@@ -128,7 +128,7 @@ void ofxDeviceNet::removeConnection(unsigned char deviceMacID)
 {
 	DWORD err;
 	if (portNum == 0xFF) {
-		ofLogError() << "Setup module before starting slave device" << endl;
+		std::cout << "Setup module before disconnecting from slave device" << std::endl;
 		return;
 	}
 
@@ -142,10 +142,11 @@ void ofxDeviceNet::startDevice(unsigned char deviceMacID)
 {
 	DWORD err;
 	if (portNum == 0xFF) {
-		ofLogError() << "Setup module before starting slave device" << endl;
+		std::cout << "Setup module before starting slave device" << std::endl;
 		return;
 	}
 
+	//std::cout << portNum << std::endl;
 	err = I7565DNM_StartDevice(portNum, deviceMacID);
 	DNM_CHECK_ERROR;
 }
@@ -154,7 +155,7 @@ void ofxDeviceNet::stopDevice(unsigned char deviceMacID)
 {
 	DWORD err;
 	if (portNum == 0xFF) {
-		ofLogError() << "Setup module before stopping slave device" << endl;
+		std::cout << "Setup module before stopping slave device" << std::endl;
 		return;
 	}
 
@@ -167,7 +168,7 @@ bool ofxDeviceNet::readBytes(unsigned char deviceMacID, unsigned char * buffer, 
 	DWORD err;
 	
 	if (portNum == 0xFF) {
-		ofLogError() << "setup module before reading bytes"; 
+		std::cout << "setup module before reading bytes" << std::endl;
 		return false;
 	}
 
@@ -188,8 +189,8 @@ bool ofxDeviceNet::writeBytes(unsigned char deviceMacID, unsigned char * buffer,
 
 
 	if (portNum == 0xFF) {
-		ofLogError() << "setup module before writing bytes" << endl;
-		return -1;
+		std::cout << "setup module before writing bytes" << std::endl;
+		return false;
 	}
 
 	err = I7565DNM_WriteOutputData(portNum, deviceMacID, ConType_Poll, length, buffer);
@@ -197,7 +198,7 @@ bool ofxDeviceNet::writeBytes(unsigned char deviceMacID, unsigned char * buffer,
 		return true;
 	}
 	else {
-		ofLogError() << "Error Writing Output Data, Error code#" << int(err);
+		std::cout << "Error Writing Output Data, Error code#" << int(err) << std::endl;
 		return false;
 	}
 }

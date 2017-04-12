@@ -1,11 +1,15 @@
 #pragma once
 
 #include <windows.h>
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <thread>
 #include "I7565DNM_API.h"
-#include "ofMain.h"
 
-#define DNM_CHECK_FATAL_ERROR if(err != I7565DNM_NoError) { ofLogFatalError() << "Error code #" << int(err);}
-#define DNM_CHECK_ERROR if(err != I7565DNM_NoError) { ofLogError() << "Error code #" << int(err);}
+
+#define DNM_CHECK_FATAL_ERROR if(err != I7565DNM_NoError) { std::cout << "Error code #" << int(err) << std::endl;}
+#define DNM_CHECK_ERROR if(err != I7565DNM_NoError) { std::cout << "Error code #" << int(err) << std::endl;}
 
 class ofxDeviceNet
 {
@@ -17,7 +21,7 @@ public:
 	void listModules();
 
 	//Returns a list of module port numbers
-	vector <unsigned char> getModuleList();
+	std::vector <unsigned char> getModuleList();
 
 	//activate the first module in the list
 	bool setup();
@@ -29,7 +33,7 @@ public:
 	void close();
 
 	//scans for connected slave devices on Device Net
-	vector <unsigned char> searchAllDevices();
+	std::vector <unsigned char> searchAllDevices();
 
 	void getBaudRate();
 
@@ -52,7 +56,7 @@ public:
 	bool writeBytes(unsigned char deviceMacID,unsigned char * buffer, unsigned short length);
 
 private:
-	BYTE numOfModule = 0;
+	BYTE numOfModule = 9;
 	BYTE portList[100];
 	BYTE portNum = 0xFF;
 	WORD TotalDevices, DeviceInputLen[100], DeviceOutputLen[100];
