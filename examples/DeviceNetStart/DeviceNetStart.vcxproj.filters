@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<ClCompile Include="src\ofApp.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="src\main.cpp">
+			<Filter>src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\addons\ofxDeviceNet\src\ofxDeviceNet.cpp">
+			<Filter>addons\ofxDeviceNet\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons">
+			<UniqueIdentifier>{71834F65-F3A9-211E-73B8-DC85}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxDeviceNet">
+			<UniqueIdentifier>{EC0F91D8-BFF5-37B5-A395-01B8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxDeviceNet\src">
+			<UniqueIdentifier>{B29CC265-6B97-38AC-A6C6-6F84}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxDeviceNet\libs">
+			<UniqueIdentifier>{CCE7000F-C270-ACCB-7A1D-8613}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxDeviceNet\libs\I7565-DNM">
+			<UniqueIdentifier>{E8A72D75-33D7-D812-D564-F8C7}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="addons\ofxDeviceNet\libs\I7565-DNM\include">
+			<UniqueIdentifier>{B162E14D-820B-86BD-8BDB-AC97}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="src\ofApp.h">
+			<Filter>src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxDeviceNet\src\ofxDeviceNet.h">
+			<Filter>addons\ofxDeviceNet\src</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\..\addons\ofxDeviceNet\libs\I7565-DNM\include\I7565DNM_API.h">
+			<Filter>addons\ofxDeviceNet\libs\I7565-DNM\include</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ResourceCompile Include="icon.rc" />
+	</ItemGroup>
+</Project>
