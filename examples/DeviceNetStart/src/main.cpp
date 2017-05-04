@@ -7,7 +7,7 @@
 //========================================================================
 bool isChange(ofxDeviceNet* dNet, const int slaveID, const unsigned char checkByte) {
 
-	unsigned char readBuffer[50]; //50 bytes because
+	unsigned char readBuffer[50] = {}; //50 bytes because
 	unsigned short dataLength = 50;
 
 	dNet->readBytes(slaveID, readBuffer, &dataLength);

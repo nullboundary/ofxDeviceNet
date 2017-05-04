@@ -35,7 +35,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	unsigned char readBuffer[50];
+	unsigned char readBuffer[50] = {};
 	unsigned short dataLength = 50;
 	
 		dNet.readBytes(slaveDeviceID, readBuffer, &dataLength);

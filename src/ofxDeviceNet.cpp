@@ -12,7 +12,7 @@ ofxDeviceNet::~ofxDeviceNet()
 
 void ofxDeviceNet::listModules() {
 	
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 
 	err = I7565DNM_TotalI7565DNMModule(&numOfModule, portList);
 	DNM_CHECK_FATAL_ERROR;
@@ -26,14 +26,14 @@ void ofxDeviceNet::listModules() {
 
 std::vector<unsigned char> ofxDeviceNet::getModuleList()
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 
 	err = I7565DNM_TotalI7565DNMModule(&numOfModule, portList);
 	DNM_CHECK_FATAL_ERROR;
 	if (numOfModule == 0) {
 		return std::vector<unsigned char>();
 	}
-	return std::vector<unsigned char> (std::begin(portList), std::end(portList));
+	return std::vector<unsigned char> (std::begin(portList), portList+numOfModule);
 	
 }
 
@@ -50,7 +50,7 @@ bool ofxDeviceNet::setup()
 
 bool ofxDeviceNet::setup(int portNumber)
 {
-	DWORD err;
+	DWORD err = DNMXS_NoError;
 
 	portNum = portNumber;
 	err = I7565DNM_ActiveModule(portNumber);
@@ -65,14 +65,15 @@ bool ofxDeviceNet::setup(int portNumber)
 
 void ofxDeviceNet::close()
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	err = I7565DNM_CloseModule(portNum);
 	DNM_CHECK_ERROR;
 }
 
 std::vector <unsigned char> ofxDeviceNet::searchAllDevices()
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
+	int sleepDuration = 300;
 
 	if (portNum == 0xFF) {
 		std::cout << "Setup module before searching for slave devices" << std::endl;
@@ -85,7 +86,7 @@ std::vector <unsigned char> ofxDeviceNet::searchAllDevices()
 	
 	while (I7565DNM_IsSearchOK(portNum)) {
 		std::cout << ".";
-		std::this_thread::sleep_for(std::chrono::milliseconds(300)); //sleep
+		std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration)); //sleep
 	}
 	std::cout << std::endl;
 
@@ -95,7 +96,7 @@ std::vector <unsigned char> ofxDeviceNet::searchAllDevices()
 		for (BYTE i = 0; i < TotalDevices; i++) {
 			std::cout << "Slave device mac ID: " << int(*DesMACID) << std::endl;
 		}
-		return std::vector<unsigned char>(std::begin(portList), std::end(portList));
+		return std::vector<unsigned char>(std::begin(DesMACID), DesMACID+TotalDevices);
 	}
 	
 	std::cout << "No slave devices found" << std::endl;
@@ -110,7 +111,7 @@ void ofxDeviceNet::getBaudRate()
 
 void ofxDeviceNet::addConnection(unsigned char deviceMacID,int inByteLen, int outByteLen, int pollRateMS)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	if (portNum == 0xFF) {
 		std::cout << "Setup module before connecting to slave device" << std::endl;
 		return;
@@ -126,7 +127,7 @@ void ofxDeviceNet::addConnection(unsigned char deviceMacID,int inByteLen, int ou
 
 void ofxDeviceNet::removeConnection(unsigned char deviceMacID)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	if (portNum == 0xFF) {
 		std::cout << "Setup module before disconnecting from slave device" << std::endl;
 		return;
@@ -140,7 +141,7 @@ void ofxDeviceNet::removeConnection(unsigned char deviceMacID)
 
 void ofxDeviceNet::startDevice(unsigned char deviceMacID)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	if (portNum == 0xFF) {
 		std::cout << "Setup module before starting slave device" << std::endl;
 		return;
@@ -153,7 +154,7 @@ void ofxDeviceNet::startDevice(unsigned char deviceMacID)
 
 void ofxDeviceNet::stopDevice(unsigned char deviceMacID)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	if (portNum == 0xFF) {
 		std::cout << "Setup module before stopping slave device" << std::endl;
 		return;
@@ -165,7 +166,7 @@ void ofxDeviceNet::stopDevice(unsigned char deviceMacID)
 
 bool ofxDeviceNet::readBytes(unsigned char deviceMacID, unsigned char * buffer, unsigned short *length)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 	
 	if (portNum == 0xFF) {
 		std::cout << "setup module before reading bytes" << std::endl;
@@ -185,7 +186,7 @@ bool ofxDeviceNet::readBytes(unsigned char deviceMacID, unsigned char * buffer, 
 
 bool ofxDeviceNet::writeBytes(unsigned char deviceMacID, unsigned char * buffer, unsigned short length)
 {
-	DWORD err;
+	DWORD err = I7565DNM_NoError;
 
 
 	if (portNum == 0xFF) {

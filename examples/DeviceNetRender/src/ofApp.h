@@ -36,6 +36,6 @@ class ofApp : public ofBaseApp{
 		ofxOscReceiver receiver;
 
 		int current_msg_string;
-		string msg_strings[NUM_MSG_STRINGS];
-		float timers[NUM_MSG_STRINGS];
+		string msg_strings[NUM_MSG_STRINGS] = {};
+		float timers[NUM_MSG_STRINGS] = {};
 };

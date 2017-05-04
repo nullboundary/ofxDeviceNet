@@ -56,11 +56,14 @@ public:
 	bool writeBytes(unsigned char deviceMacID,unsigned char * buffer, unsigned short length);
 
 private:
-	BYTE numOfModule = 9;
-	BYTE portList[100];
+	BYTE numOfModule = 0;
+	BYTE portList[100] = {};
 	BYTE portNum = 0xFF;
-	WORD TotalDevices, DeviceInputLen[100], DeviceOutputLen[100];
-	BYTE DesMACID[100], Type[100];
+	WORD TotalDevices = 0; 
+	WORD DeviceInputLen[100] = {};
+	WORD DeviceOutputLen[100] = {};
+	BYTE DesMACID[100] = {};
+	BYTE Type[100] = {};
 
 };
 
